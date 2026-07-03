@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "graph.h"
 
+// Global graph variable
+Graph routeGraph;
 
+// Function to display the main menu
 void displayMenu() {
     printf("\n========================================\n");
-    printf("  GRAPH-BASED ROUTE NAVIGATION SYSTEM\n");
+    printf("  🗺️  GRAPH-BASED ROUTE NAVIGATION SYSTEM\n");
     printf("========================================\n");
     printf("1. Add Location\n");
     printf("2. Add Route\n");
@@ -19,46 +23,83 @@ void displayMenu() {
     printf("Enter your choice: ");
 }
 
-
 int main() {
     int choice;
+    char name[MAX_NAME_LENGTH];
+    int from, to, distance;
+    
+    // Initialize the graph
+    initGraph(&routeGraph);
     
     printf("\n=== ROUTE NAVIGATION SYSTEM ===\n");
-    printf("Initializing system...\n");
-    
+    printf("Graph-Based Route Navigation System\n");
+    printf("===================================\n\n");
     
     do {
         displayMenu();
         scanf("%d", &choice);
-        getchar(); 
+        getchar(); // Clear input buffer
         
         switch(choice) {
-            case 1:
-                printf("Add Location feature (coming soon)\n");
+            case 1: // Add Location
+                printf("Enter location name: ");
+                fgets(name, MAX_NAME_LENGTH, stdin);
+                name[strcspn(name, "\n")] = '\0'; // Remove newline
+                addLocation(&routeGraph, name);
                 break;
-            case 2:
-                printf("Add Route feature (coming soon)\n");
+                
+            case 2: // Add Route
+                if(routeGraph.locationCount < 2) {
+                    printf("⚠️  Need at least 2 locations to add a route!\n");
+                    break;
+                }
+                displayLocations(&routeGraph);
+                printf("\nEnter source location ID: ");
+                scanf("%d", &from);
+                printf("Enter destination location ID: ");
+                scanf("%d", &to);
+                printf("Enter distance (in km): ");
+                scanf("%d", &distance);
+                addRoute(&routeGraph, from, to, distance);
                 break;
-            case 3:
-                printf("View Locations feature (coming soon)\n");
+                
+            case 3: // View Locations
+                displayLocations(&routeGraph);
                 break;
-            case 4:
-                printf("View Routes feature (coming soon)\n");
+                
+            case 4: // View Routes
+                displayRoutes(&routeGraph);
                 break;
-            case 5:
-                printf("Find Shortest Path feature (coming soon)\n");
+                
+            case 5: // Find Shortest Path (Bellman-Ford)
+                if(routeGraph.locationCount < 2) {
+                    printf("⚠️  Need at least 2 locations to find a path!\n");
+                    break;
+                }
+                displayLocations(&routeGraph);
+                printf("\nEnter source location ID: ");
+                scanf("%d", &from);
+                printf("Enter destination location ID: ");
+                scanf("%d", &to);
+                bellmanFord(&routeGraph, from, to);
                 break;
-            case 6:
+                
+            case 6: // Save Data
                 printf("Save Data feature (coming soon)\n");
                 break;
-            case 7:
+                
+            case 7: // Load Data
                 printf("Load Data feature (coming soon)\n");
                 break;
-            case 8:
-                printf("Exiting system. Goodbye!\n");
+                
+            case 8: // Exit
+                printf("\n========================================\n");
+                printf("  Thank you for using Route Navigator! 🗺️\n");
+                printf("========================================\n");
                 break;
+                
             default:
-                printf("Invalid choice! Please try again.\n");
+                printf("❌ Invalid choice! Please enter 1-8.\n");
         }
     } while(choice != 8);
     
